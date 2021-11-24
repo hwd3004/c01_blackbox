@@ -13,14 +13,26 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.c01_blackbox.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 
 public class GPS_Fragment extends Fragment implements LocationListener {
 
-    TextView textView;
+    //    TextView textView;
+    private GoogleMap map;
+    private MarkerOptions myLocationMarker;
 
     public GPS_Fragment() {
     }
+
+    public void setMap(GoogleMap map) {
+        this.map = map;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,10 +51,27 @@ public class GPS_Fragment extends Fragment implements LocationListener {
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
 
-        textView = getActivity().findViewById(R.id.textView);
+        showCurrentLocation(latitude, longitude);
+    }
 
-        String text = "위도 : " + latitude + ", 경도 : " + longitude;
+    void showCurrentLocation(Double latitude, Double longitude) {
+        LatLng curPoint = new LatLng(latitude, longitude);
 
-        textView.setText(text);
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 15));
+
+        showMyLocationMarker(curPoint);
+    }
+
+    private void showMyLocationMarker(LatLng curPoint) {
+        if (myLocationMarker == null) {
+            myLocationMarker = new MarkerOptions();
+            myLocationMarker.position(curPoint);
+            myLocationMarker.title("● 내 위치\n");
+            myLocationMarker.snippet("● GPS로 확인한 위치");
+            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.mylocation));
+            map.addMarker(myLocationMarker);
+        } else {
+            myLocationMarker.position(curPoint);
+        }
     }
 }

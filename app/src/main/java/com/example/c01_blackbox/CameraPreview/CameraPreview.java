@@ -11,11 +11,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.c01_blackbox.R;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 
 public class CameraPreview extends AppCompatActivity {
 
@@ -23,6 +27,7 @@ public class CameraPreview extends AppCompatActivity {
     Button button_record;
     TextView textView;
     GPS_Fragment gps_fragment;
+    SupportMapFragment mapFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +37,17 @@ public class CameraPreview extends AppCompatActivity {
         gps_fragment = new GPS_Fragment();
 
         getSupportFragmentManager().beginTransaction().replace(R.id.gpsFragment, gps_fragment).commit();
+
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.gpsFragment);
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                gps_fragment.setMap(googleMap);
+            }
+        });
+
+        startLocationService(gps_fragment);
+
 
         hideSystemUI();
 
@@ -53,9 +69,6 @@ public class CameraPreview extends AppCompatActivity {
         if (cameraSurfaceView.file != null) {
             cameraSurfaceView.filename = cameraSurfaceView.file.getAbsolutePath();
         }
-
-        startLocationService(gps_fragment);
-
     }
 
     public void hideSystemUI() {
@@ -93,19 +106,6 @@ public class CameraPreview extends AppCompatActivity {
         LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         try {
-            Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-            if (location != null) {
-                double latitude = location.getLatitude();
-                double longitude = location.getLongitude();
-
-                textView = findViewById(R.id.textView);
-
-                String text = "위도 : " + latitude + ", 경도 : " + longitude;
-
-                textView.setText(text);
-            }
-
 
             long minTime = 1000;
             float minDistance = 0;

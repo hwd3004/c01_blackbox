@@ -5,9 +5,4 @@
     android:layout_height="match_parent"
     tools:context=".CameraPreview.GPS_Fragment">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
 </FrameLayout>
