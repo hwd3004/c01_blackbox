@@ -32,6 +32,7 @@
             <fragment
                 android:id="@+id/gpsFragment"
                 android:name="com.example.c01_blackbox.CameraPreview.GPS_Fragment"
+                class="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
