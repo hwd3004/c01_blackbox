@@ -1,13 +1,19 @@
 package com.example.c01_blackbox.CameraPreview;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.res.Configuration;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
 
 import com.example.c01_blackbox.R;
 
@@ -15,11 +21,17 @@ public class CameraPreview extends AppCompatActivity {
 
     CameraSurfaceView cameraSurfaceView;
     Button button_record;
+    TextView textView;
+    GPS_Fragment gps_fragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_preview);
+
+        gps_fragment = new GPS_Fragment();
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.gpsFragment, gps_fragment).commit();
 
         hideSystemUI();
 
@@ -41,6 +53,8 @@ public class CameraPreview extends AppCompatActivity {
         if (cameraSurfaceView.file != null) {
             cameraSurfaceView.filename = cameraSurfaceView.file.getAbsolutePath();
         }
+
+        startLocationService(gps_fragment);
 
     }
 
@@ -72,5 +86,34 @@ public class CameraPreview extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+    }
+
+    @SuppressLint("MissingPermission")
+    public void startLocationService(GPS_Fragment gps_fragment) {
+        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        try {
+            Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            if (location != null) {
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+
+                textView = findViewById(R.id.textView);
+
+                String text = "위도 : " + latitude + ", 경도 : " + longitude;
+
+                textView.setText(text);
+            }
+
+
+            long minTime = 1000;
+            float minDistance = 0;
+
+            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, gps_fragment);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
