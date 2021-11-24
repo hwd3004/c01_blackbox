@@ -6,22 +6,37 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/button_record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Record"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/displayView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/button_record"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Start Record" />
-
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/layout_camera"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"></androidx.coordinatorlayout.widget.CoordinatorLayout>
+            android:layout_height="match_parent">
 
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/layout_camera"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3" />
+
+            <fragment
+                android:id="@+id/gpsFragment"
+                android:name="com.example.c01_blackbox.CameraPreview.GPS_Fragment"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                tools:layout="@layout/fragment_gps" />
+        </LinearLayout>
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
