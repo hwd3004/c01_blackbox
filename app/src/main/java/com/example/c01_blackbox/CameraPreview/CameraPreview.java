@@ -11,15 +11,20 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
+
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import com.example.c01_blackbox.R;
+import com.example.c01_blackbox.SelectDirectory;
+import com.example.c01_blackbox.Util;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.hbisoft.hbrecorder.HBRecorder;
 import com.hbisoft.hbrecorder.HBRecorderListener;
+
 import java.io.File;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -29,8 +34,6 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
     Button button_record;
     GPS_Fragment gps_fragment;
     SupportMapFragment mapFragment;
-
-    String APP_TITLE = "BlackBoxApp";
 
     HBRecorder hbRecorder;
 
@@ -80,7 +83,7 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
 
         startLocationService(gps_fragment);
 
-        setOutputPath();
+        Util.setOutputPath(hbRecorder);
     }
 
     public void hideSystemUI() {
@@ -115,22 +118,6 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
             float minDistance = 0;
 
             manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, gps_fragment);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    void setOutputPath() {
-        try {
-            File storageDir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_MOVIES), APP_TITLE);
-
-            if (!storageDir.exists()) {
-                storageDir.mkdirs();
-            }
-
-            hbRecorder.setOutputPath(storageDir.getAbsolutePath());
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -17,9 +17,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/displayView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible"
-        tools:visibility="invisible">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
