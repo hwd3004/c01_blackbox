@@ -1,4 +1,6 @@
 package com.example.c01_blackbox;
 
-public class SelectDirectory {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SelectDirectory extends AppCompatActivity {
 }
