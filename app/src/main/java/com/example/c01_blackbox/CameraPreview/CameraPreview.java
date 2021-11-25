@@ -1,18 +1,23 @@
 package com.example.c01_blackbox.CameraPreview;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.hardware.display.DisplayManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -24,12 +29,16 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.c01_blackbox.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.hbisoft.hbrecorder.HBRecorder;
+import com.hbisoft.hbrecorder.HBRecorderListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +47,7 @@ import java.util.Date;
 import java.util.Locale;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class CameraPreview extends AppCompatActivity {
+public class CameraPreview extends AppCompatActivity implements HBRecorderListener {
 
     CameraSurfaceView cameraSurfaceView;
     Button button_record;
@@ -49,14 +58,19 @@ public class CameraPreview extends AppCompatActivity {
     File file;
     String filename;
 
-    private MediaProjection mediaProjection;
+    HBRecorder hbRecorder;
 
-    private static final int REQUEST_CODE_MediaProjection = 101;
+    private static final int SCREEN_RECORD_REQUEST_CODE = 777;
+    private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
+    private static final int PERMISSION_REQ_ID_WRITE_EXTERNAL_STORAGE = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_preview);
+
+        hbRecorder = new HBRecorder(this, this);
+        hbRecorder.setScreenDimensions(720, 1280);
 
         gps_fragment = new GPS_Fragment();
 
@@ -72,7 +86,6 @@ public class CameraPreview extends AppCompatActivity {
 
         startLocationService(gps_fragment);
 
-
         hideSystemUI();
 
         cameraSurfaceView = new CameraSurfaceView(this);
@@ -85,7 +98,10 @@ public class CameraPreview extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 button_record.setVisibility(View.INVISIBLE);
-                cameraSurfaceView.startRecording();
+                if (hbRecorder.isBusyRecording()) {
+                    hbRecorder.stopScreenRecording();
+                }
+                startRecordingScreen();
             }
         });
 
@@ -93,6 +109,7 @@ public class CameraPreview extends AppCompatActivity {
         if (file != null) {
             filename = file.getAbsolutePath();
         }
+
     }
 
     public void hideSystemUI() {
@@ -108,16 +125,9 @@ public class CameraPreview extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-//        if (cameraSurfaceView.isRecording) {
-//            try {
-//                cameraSurfaceView.stopRecording();
-//                Log.d("CameraPreview", "onPause()");
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
+    protected void onDestroy() {
+        super.onDestroy();
+        hbRecorder.stopScreenRecording();
     }
 
     @Override
@@ -138,42 +148,6 @@ public class CameraPreview extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    //    미디어프로젝션 권한 요청
-    private void startMediaProjection() {
-        MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
-        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE_MediaProjection);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, final int resultCode, final Intent data) {
-        // 미디어 프로젝션 응답
-        if (requestCode == REQUEST_CODE_MediaProjection && resultCode == RESULT_OK) {
-            screenRecorder(resultCode, data);
-            return;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void screenRecorder(int resultCode, Intent data) {
-        final MediaRecorder screenRecorder = createRecorder();
-        MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
-        mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
-        MediaProjection.Callback callback = new MediaProjection.Callback() {
-            @Override
-            public void onStop() {
-                super.onStop();
-                if (screenRecorder != null) {
-                    screenRecorder.stop();
-                    screenRecorder.reset();
-                    screenRecorder.release();
-                }
-                mediaProjection.unregisterCallback(this);
-                mediaProjection = null;
-            }
-        };
-        mediaProjection.registerCallback(callback, null);kkkkkk
     }
 
 
@@ -225,5 +199,37 @@ public class CameraPreview extends AppCompatActivity {
         }
 
         return mediaFile;
+    }
+
+    private void startRecordingScreen() {
+        MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        Intent permissionIntent = mediaProjectionManager != null ? mediaProjectionManager.createScreenCaptureIntent() : null;
+        startActivityForResult(permissionIntent, SCREEN_RECORD_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SCREEN_RECORD_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                //Start screen recording
+                hbRecorder.startScreenRecording(data, resultCode, this);
+            }
+        }
+    }
+
+    @Override
+    public void HBRecorderOnStart() {
+
+    }
+
+    @Override
+    public void HBRecorderOnComplete() {
+
+    }
+
+    @Override
+    public void HBRecorderOnError(int errorCode, String reason) {
+
     }
 }
