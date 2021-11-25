@@ -1,15 +1,13 @@
 package com.example.c01_blackbox;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.c01_blackbox.CameraPreview.CameraPreview;
 import com.yanzhenjie.permission.Action;
@@ -54,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         button_selectdirectory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, CameraPreview.class);
+                Intent intent = new Intent(MainActivity.this, SelectDirectory.class);
                 startActivity(intent);
             }
         });

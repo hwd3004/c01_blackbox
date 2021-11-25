@@ -11,8 +11,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start Record"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/displayView"
@@ -27,7 +28,10 @@
                 android:id="@+id/layout_camera"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="3" />
+                android:layout_weight="3">
+
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 
             <fragment
                 android:id="@+id/gpsFragment"

@@ -1,50 +1,27 @@
 package com.example.c01_blackbox.CameraPreview;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.hardware.display.DisplayManager;
-import android.location.Location;
 import android.location.LocationManager;
-import android.media.MediaRecorder;
-import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
 import com.example.c01_blackbox.R;
+import com.example.c01_blackbox.Util;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.hbisoft.hbrecorder.HBRecorder;
 import com.hbisoft.hbrecorder.HBRecorderListener;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class CameraPreview extends AppCompatActivity implements HBRecorderListener {
@@ -53,10 +30,6 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
     Button button_record;
     GPS_Fragment gps_fragment;
     SupportMapFragment mapFragment;
-
-    String APP_TITLE = "BlackBoxApp";
-    File file;
-    String filename;
 
     HBRecorder hbRecorder;
 
@@ -69,6 +42,8 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_preview);
 
+
+//        https://github.com/HBiSoft/HBRecorder
         hbRecorder = new HBRecorder(this, this);
         hbRecorder.setScreenDimensions(720, 1280);
 
@@ -83,8 +58,8 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
                 gps_fragment.setMap(googleMap);
             }
         });
-
         startLocationService(gps_fragment);
+
 
         hideSystemUI();
 
@@ -105,11 +80,7 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
             }
         });
 
-        file = getOutputFile();
-        if (file != null) {
-            filename = file.getAbsolutePath();
-        }
-
+        Util.setOutputPath(hbRecorder);
     }
 
     public void hideSystemUI() {
@@ -125,8 +96,8 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         hbRecorder.stopScreenRecording();
     }
 
@@ -151,56 +122,6 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
     }
 
 
-    private MediaRecorder createRecorder() {
-        MediaRecorder mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mediaRecorder.setOutputFile(filename);
-        DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
-        mediaRecorder.setVideoSize(displayMetrics.widthPixels, displayMetrics.heightPixels);
-        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-//        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-//        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-//        mediaRecorder.setVideoEncodingBitRate(512 * 1000);
-//        mediaRecorder.setVideoFrameRate(30);
-        mediaRecorder.setVideoSize(1280, 720);
-
-        try {
-            mediaRecorder.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return mediaRecorder;
-    }
-
-    public File getOutputFile() {
-        File mediaFile = null;
-
-        try {
-            File storageDir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES), APP_TITLE);
-
-            if (!storageDir.exists()) {
-                if (!storageDir.mkdirs()) {
-                    Log.d(APP_TITLE, "failed to create directory");
-                    return null;
-                }
-            }
-
-            Date date = new Date(System.currentTimeMillis());
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.KOREA);
-            String getTime = dateFormat.format(date);
-
-            mediaFile = new File(storageDir.getPath() + File.separator + getTime + ".mp4");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return mediaFile;
-    }
-
     private void startRecordingScreen() {
         MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         Intent permissionIntent = mediaProjectionManager != null ? mediaProjectionManager.createScreenCaptureIntent() : null;
@@ -220,7 +141,7 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
 
     @Override
     public void HBRecorderOnStart() {
-
+        hideSystemUI();
     }
 
     @Override
