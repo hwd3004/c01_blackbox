@@ -8,7 +8,6 @@ import android.location.LocationManager;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 
@@ -17,8 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.example.c01_blackbox.R;
-import com.example.c01_blackbox.SelectDirectory;
-import com.example.c01_blackbox.Util;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -35,6 +32,11 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
     GPS_Fragment gps_fragment;
     SupportMapFragment mapFragment;
 
+
+    String APP_TITLE = "BlackBoxApp";
+    File file;
+    String filename;
+
     HBRecorder hbRecorder;
 
     private static final int SCREEN_RECORD_REQUEST_CODE = 777;
@@ -46,7 +48,9 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_preview);
 
+
 //        https://github.com/HBiSoft/HBRecorder
+
         hbRecorder = new HBRecorder(this, this);
         hbRecorder.setScreenDimensions(720, 1280);
 
@@ -61,6 +65,8 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
                 gps_fragment.setMap(googleMap);
             }
         });
+        startLocationService(gps_fragment);
+
 
         hideSystemUI();
 
@@ -80,8 +86,6 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
                 startRecordingScreen();
             }
         });
-
-        startLocationService(gps_fragment);
 
         Util.setOutputPath(hbRecorder);
     }
@@ -123,6 +127,7 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
             e.printStackTrace();
         }
     }
+
 
 
     private void startRecordingScreen() {
