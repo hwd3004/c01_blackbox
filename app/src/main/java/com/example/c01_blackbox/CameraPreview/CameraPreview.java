@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.example.c01_blackbox.R;
+import com.example.c01_blackbox.Util;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -127,7 +128,6 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
             e.printStackTrace();
         }
     }
-
 
 
     private void startRecordingScreen() {
