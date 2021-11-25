@@ -2,16 +2,26 @@ package com.example.c01_blackbox.CameraPreview;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.MediaRecorder;
+import android.media.projection.MediaProjection;
+import android.media.projection.MediaProjectionManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
@@ -21,13 +31,27 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class CameraPreview extends AppCompatActivity {
 
     CameraSurfaceView cameraSurfaceView;
     Button button_record;
-    TextView textView;
     GPS_Fragment gps_fragment;
     SupportMapFragment mapFragment;
+
+    String APP_TITLE = "BlackBoxApp";
+    File file;
+    String filename;
+
+    private MediaProjection mediaProjection;
+
+    private static final int REQUEST_CODE_MediaProjection = 101;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,9 +89,9 @@ public class CameraPreview extends AppCompatActivity {
             }
         });
 
-        cameraSurfaceView.file = cameraSurfaceView.getOutputFile();
-        if (cameraSurfaceView.file != null) {
-            cameraSurfaceView.filename = cameraSurfaceView.file.getAbsolutePath();
+        file = getOutputFile();
+        if (file != null) {
+            filename = file.getAbsolutePath();
         }
     }
 
@@ -86,14 +110,14 @@ public class CameraPreview extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (cameraSurfaceView.isRecording) {
-            try {
-                cameraSurfaceView.stopRecording();
-                Log.d("CameraPreview", "onPause()");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        if (cameraSurfaceView.isRecording) {
+//            try {
+//                cameraSurfaceView.stopRecording();
+//                Log.d("CameraPreview", "onPause()");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     @Override
@@ -106,7 +130,6 @@ public class CameraPreview extends AppCompatActivity {
         LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         try {
-
             long minTime = 1000;
             float minDistance = 0;
 
@@ -115,5 +138,92 @@ public class CameraPreview extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //    미디어프로젝션 권한 요청
+    private void startMediaProjection() {
+        MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
+        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE_MediaProjection);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, final int resultCode, final Intent data) {
+        // 미디어 프로젝션 응답
+        if (requestCode == REQUEST_CODE_MediaProjection && resultCode == RESULT_OK) {
+            screenRecorder(resultCode, data);
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void screenRecorder(int resultCode, Intent data) {
+        final MediaRecorder screenRecorder = createRecorder();
+        MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
+        mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
+        MediaProjection.Callback callback = new MediaProjection.Callback() {
+            @Override
+            public void onStop() {
+                super.onStop();
+                if (screenRecorder != null) {
+                    screenRecorder.stop();
+                    screenRecorder.reset();
+                    screenRecorder.release();
+                }
+                mediaProjection.unregisterCallback(this);
+                mediaProjection = null;
+            }
+        };
+        mediaProjection.registerCallback(callback, null);kkkkkk
+    }
+
+
+    private MediaRecorder createRecorder() {
+        MediaRecorder mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mediaRecorder.setOutputFile(filename);
+        DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+        mediaRecorder.setVideoSize(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+//        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+//        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+//        mediaRecorder.setVideoEncodingBitRate(512 * 1000);
+//        mediaRecorder.setVideoFrameRate(30);
+        mediaRecorder.setVideoSize(1280, 720);
+
+        try {
+            mediaRecorder.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return mediaRecorder;
+    }
+
+    public File getOutputFile() {
+        File mediaFile = null;
+
+        try {
+            File storageDir = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES), APP_TITLE);
+
+            if (!storageDir.exists()) {
+                if (!storageDir.mkdirs()) {
+                    Log.d(APP_TITLE, "failed to create directory");
+                    return null;
+                }
+            }
+
+            Date date = new Date(System.currentTimeMillis());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.KOREA);
+            String getTime = dateFormat.format(date);
+
+            mediaFile = new File(storageDir.getPath() + File.separator + getTime + ".mp4");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return mediaFile;
     }
 }
