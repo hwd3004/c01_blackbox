@@ -103,12 +103,6 @@ class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
         recorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
         recorder.setVideoSize(1280, 720);
-
-//        file = getOutputFile();
-//        if (file != null) {
-//            filename = file.getAbsolutePath();
-//        }
-
         recorder.setOutputFile(filename);
 
         recorder.setPreviewDisplay(surfaceHolder.getSurface());
