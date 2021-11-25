@@ -23,8 +23,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.hbisoft.hbrecorder.HBRecorder;
 import com.hbisoft.hbrecorder.HBRecorderListener;
 
-import java.io.File;
-
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class CameraPreview extends AppCompatActivity implements HBRecorderListener {
 
@@ -32,11 +30,6 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
     Button button_record;
     GPS_Fragment gps_fragment;
     SupportMapFragment mapFragment;
-
-
-    String APP_TITLE = "BlackBoxApp";
-    File file;
-    String filename;
 
     HBRecorder hbRecorder;
 
@@ -51,7 +44,6 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
 
 
 //        https://github.com/HBiSoft/HBRecorder
-
         hbRecorder = new HBRecorder(this, this);
         hbRecorder.setScreenDimensions(720, 1280);
 
