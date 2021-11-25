@@ -84,8 +84,6 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
             }
         });
 
-        startLocationService(gps_fragment);
-
         hideSystemUI();
 
         cameraSurfaceView = new CameraSurfaceView(this);
@@ -109,6 +107,8 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
         if (file != null) {
             filename = file.getAbsolutePath();
         }
+
+        startLocationService(gps_fragment);
 
     }
 
@@ -220,7 +220,7 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
 
     @Override
     public void HBRecorderOnStart() {
-
+        hideSystemUI();
     }
 
     @Override
