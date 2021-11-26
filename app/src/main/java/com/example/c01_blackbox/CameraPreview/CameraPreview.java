@@ -34,8 +34,6 @@ public class CameraPreview extends AppCompatActivity implements HBRecorderListen
     HBRecorder hbRecorder;
 
     private static final int SCREEN_RECORD_REQUEST_CODE = 777;
-    private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
-    private static final int PERMISSION_REQ_ID_WRITE_EXTERNAL_STORAGE = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
