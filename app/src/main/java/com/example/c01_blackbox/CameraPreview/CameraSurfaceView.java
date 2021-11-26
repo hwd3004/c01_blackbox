@@ -64,7 +64,8 @@ class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     void setCameraOrientation() {
 //        https://slenderankle.tistory.com/60
 
-        WindowManager manager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager manager = (WindowManager) getContext()
+                .getSystemService(Context.WINDOW_SERVICE);
         int rotation = manager.getDefaultDisplay().getRotation();
         int degrees = 0;
 
