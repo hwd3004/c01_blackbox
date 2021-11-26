@@ -14,6 +14,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
+import com.example.c01_blackbox.Util;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,8 +29,6 @@ class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     MediaRecorder recorder;
 
     String filename;
-
-    String APP_TITLE = "BlackBoxApp";
 
     boolean isRecording = false;
 
@@ -111,7 +111,7 @@ class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
             recorder.start();
             isRecording = true;
 
-            Log.d(APP_TITLE, "startRecording()");
+            Log.d(Util.APP_TITLE, "startRecording()");
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -132,10 +132,10 @@ class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 
         ContentValues values = new ContentValues(10);
 
-        values.put(MediaStore.MediaColumns.TITLE, APP_TITLE);
-        values.put(MediaStore.Audio.Media.ALBUM, APP_TITLE + " Video");
-        values.put(MediaStore.Audio.Media.ARTIST, APP_TITLE);
-        values.put(MediaStore.Audio.Media.DISPLAY_NAME, APP_TITLE + " Recorded Video");
+        values.put(MediaStore.MediaColumns.TITLE, Util.APP_TITLE);
+        values.put(MediaStore.Audio.Media.ALBUM, Util.APP_TITLE + " Video");
+        values.put(MediaStore.Audio.Media.ARTIST, Util.APP_TITLE);
+        values.put(MediaStore.Audio.Media.DISPLAY_NAME, Util.APP_TITLE + " Recorded Video");
         values.put(MediaStore.MediaColumns.DATE_ADDED, System.currentTimeMillis() / 1000);
         values.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
         values.put(MediaStore.Audio.Media.DATA, filename);
@@ -143,7 +143,7 @@ class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
         Uri videoUri = getContext().getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
 
         if (videoUri == null) {
-            Log.d("BlackBoxApp", "Video insert failed.");
+            Log.d(Util.APP_TITLE, "Video insert failed.");
         }
 
         getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, videoUri));
@@ -156,11 +156,11 @@ class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 
         try {
             File storageDir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES), APP_TITLE);
+                    Environment.DIRECTORY_PICTURES), Util.APP_TITLE);
 
             if (!storageDir.exists()) {
                 if (!storageDir.mkdirs()) {
-                    Log.d(APP_TITLE, "failed to create directory");
+                    Log.d(Util.APP_TITLE, "failed to create directory");
                     return null;
                 }
             }
