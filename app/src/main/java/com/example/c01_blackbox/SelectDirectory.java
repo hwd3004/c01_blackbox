@@ -28,16 +28,11 @@ public class SelectDirectory extends AppCompatActivity {
         file = new File(rootSD);
 
         File list[] = file.listFiles();
-        System.out.println("========================================================================================================================");
-        System.out.println(list);
-        System.out.println("========================================================================================================================");
 
         for (int i = 0; i < list.length; i++) {
             myList.add(list[i].getName());
             System.out.println(list[i].getName());
         }
-
-        System.out.println("========================================================================================================================");
 
         mAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
 
