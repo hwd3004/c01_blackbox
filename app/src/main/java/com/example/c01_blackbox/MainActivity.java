@@ -25,7 +25,13 @@ public class MainActivity extends AppCompatActivity {
 
         String tag = "MAIN";
 
-        AndPermission.with(this).runtime().permission(Permission.ACCESS_COARSE_LOCATION, Permission.ACCESS_FINE_LOCATION, Permission.CAMERA, Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE, Permission.RECORD_AUDIO).onGranted(new Action<List<String>>() {
+        AndPermission.with(this).runtime().permission(
+                Permission.ACCESS_COARSE_LOCATION,
+                Permission.ACCESS_FINE_LOCATION,
+                Permission.CAMERA,
+                Permission.READ_EXTERNAL_STORAGE,
+                Permission.WRITE_EXTERNAL_STORAGE,
+                Permission.RECORD_AUDIO).onGranted(new Action<List<String>>() {
             @Override
             public void onAction(List<String> data) {
                 Log.d(tag, "허용된 권한 수 : " + data.size());
