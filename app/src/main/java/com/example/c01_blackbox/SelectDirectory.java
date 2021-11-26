@@ -31,7 +31,7 @@ public class SelectDirectory extends AppCompatActivity {
 
         for (int i = 0; i < list.length; i++) {
             myList.add(list[i].getName());
-            System.out.println(list[i].getName());
+//            System.out.println(list[i].getName());
         }
 
         mAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
