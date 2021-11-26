@@ -26,7 +26,6 @@ class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 
     MediaRecorder recorder;
 
-    File file;
     String filename;
 
     String APP_TITLE = "BlackBoxApp";

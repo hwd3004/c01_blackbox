@@ -22,7 +22,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class GPS_Fragment extends Fragment implements LocationListener {
 
-    //    TextView textView;
     private GoogleMap map;
     private MarkerOptions myLocationMarker;
 
