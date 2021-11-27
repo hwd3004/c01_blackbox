@@ -3,14 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/409/AndroidStudioProjects/c01_blackbox/app/src/main/res/layout-land/camera_preview.xml" value="0.25" />
+        <entry key="..\:/Users/409/AndroidStudioProjects/c01_blackbox/app/src/main/res/layout-land/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/409/AndroidStudioProjects/c01_blackbox/app/src/main/res/layout-land/camera_preview.xml" value="0.13315696649029982" />
+        <entry key="..\:/Users/409/AndroidStudioProjects/c01_blackbox/app/src/main/res/layout-land/video_list.xml" value="0.27733686067019403" />
         <entry key="..\:/Users/409/AndroidStudioProjects/c01_blackbox/app/src/main/res/layout-land/video_play.xml" value="0.13051146384479717" />
         <entry key="..\:/Users/409/AndroidStudioProjects/c01_blackbox/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/409/AndroidStudioProjects/c01_blackbox/app/src/main/res/layout/camera_preview.xml" value="0.19479166666666667" />
         <entry key="..\:/Users/409/AndroidStudioProjects/c01_blackbox/app/src/main/res/layout/video_item.xml" value="0.10104166666666667" />
         <entry key="..\:/Users/409/AndroidStudioProjects/c01_blackbox/app/src/main/res/layout/video_list.xml" value="0.21041666666666667" />
         <entry key="..\:/Users/409/AndroidStudioProjects/c01_blackbox/app/src/main/res/layout/video_play.xml" value="0.24375" />
-        <entry key="..\:/Users/409/AndroidStudioProjects/c01_blackbox/app/src/main/res/layout-land/camera_preview.xml" value="0.13315696649029982" />
       </map>
     </option>
   </component>
